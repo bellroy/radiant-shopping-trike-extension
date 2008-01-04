@@ -7,7 +7,7 @@ class ShoppingTrikeExtension < Radiant::Extension
   url "http://code.trike.com.au/radiant/extensions/shopping_trike"
   
   define_routes do |map|
-    map.connect 'admin/store/:action', :controller => 'admin/store'
+    map.connect 'admin/store/:action', :controller => 'store'
   end
   
   def activate
