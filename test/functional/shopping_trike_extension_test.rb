@@ -8,4 +8,17 @@ class ShoppingTrikeExtensionTest < Test::Unit::TestCase
     assert_equal 'Shopping Trike', ShoppingTrikeExtension.extension_name
   end
   
+  def test_should_define_pages
+    [StorePage, ProductPage].each do |page|
+      assert defined?(page)
+    end
+  end
+
+  def test_store_products_each_tag
+    @page = StoreProductPage.new
+    
+    assert_renders 'A B C ', '<r:store:products:each><r:code /> </r:store:products:each>', '/store/A/'
+    assert_renders 'A B C ', '<r:store:products:each><r:code /> </r:store:products:each>', '/store/A'
+  end
+  
 end

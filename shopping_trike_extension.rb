@@ -8,10 +8,10 @@ class ShoppingTrikeExtension < Radiant::Extension
   
   define_routes do |map|
     map.connect 'admin/store/:action', :controller => 'admin/store'
-    map.connect 'store/:action', :controller => 'store'
   end
   
   def activate
+    StorePage
     admin.tabs.add "Store", "/admin/store", :after => "Layouts", :visibility => [:all]
   end
   

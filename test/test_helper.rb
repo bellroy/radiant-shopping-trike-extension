@@ -6,6 +6,8 @@ unless defined? RADIANT_ROOT
 end
 require "#{RADIANT_ROOT}/test/test_helper"
 
+%w[rubygems mocha].each {|l| require l }
+
 class Test::Unit::TestCase
   
   # Include a helper to make testing Radius tags easier

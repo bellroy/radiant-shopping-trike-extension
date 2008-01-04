@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class ProductTest < Test::Unit::TestCase
-  fixtures :products
-
-  def test_truth
-    assert true
+  test_helper :pages, :render
+  
+  def setup
+    @page = StorePage.new
   end
 end
