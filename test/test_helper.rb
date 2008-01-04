@@ -18,4 +18,4 @@ class Test::Unit::TestCase
   
 end
 
-%w[rubygems mocha].each {|l| require l }
+%w[rubygems mocha ruby-debug].each {|l| require l }
