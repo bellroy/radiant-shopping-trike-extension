@@ -10,7 +10,7 @@ class ShoppingTrikeExtensionTest < Test::Unit::TestCase
   end
   
   def test_should_define_pages
-    [StorePage, ProductPage].each do |page|
+    [StorePage].each do |page|
       assert defined?(page)
     end
   end
