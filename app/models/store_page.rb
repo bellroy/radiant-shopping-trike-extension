@@ -169,8 +169,24 @@ class StorePage < Page
     [CartController.cart_form_fragment_to_alter_an_item_quantity_in_cart( @cart_item.product, @cart_item.quantity )]
   end
 
-  tag "shopping:attempted_url" do
+  tag "shopping:attempted_url" do |tag|
     CGI.escapeHTML(request.request_uri) unless request.nil?
+  end
+  
+  tag "shopping:checkout" do |tag|
+    tag.expand
+  end
+  
+  tag "shopping:checkout:austhink" do |tag|
+    tag.expand
+  end
+  
+  tag "shopping:checkout:austhink:customerform" do |tag|
+    [SitePointController.customer_login_form]
+  end
+  
+  tag "shopping:checkout:austhink:processorder" do |tag|
+    [SitePointController.process_form]
   end
   
   private
@@ -211,12 +227,5 @@ class StorePage < Page
   
     def product_or_cart_from_url(url)
       product_or_cart(url)
-    end
-    
-    def config
-      string = render_part(:config)
-
-      
-      MerchantConfig.new( string )
     end
 end

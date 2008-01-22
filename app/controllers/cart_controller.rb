@@ -1,7 +1,4 @@
-class CartController < ActionController::Base
-  require 'yaml'
-  require 'active_merchant'
-  
+class CartController < ActionController::Base  
   def add_or_update_in_cart
     begin
       product = Product.find(params[:id])
@@ -32,10 +29,6 @@ class CartController < ActionController::Base
     redirect_to :back
   end
   
-  def process_order
-    
-  end
-    
   def self.form_to_add_or_update_product_in_cart( product )
     %Q( <form action="/shopping_trike/cart/add_or_update_in_cart" method="post"
           onsubmit="new Ajax.Request('/shopping_trike/cart/add_or_update_in_cart',
