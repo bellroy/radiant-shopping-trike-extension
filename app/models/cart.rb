@@ -42,6 +42,27 @@ class Cart
     grand_total
   end
   
+  def xml
+    xml = Builder::XmlMarkup.new
+    xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
+    xml.cart{
+      xml.items{
+        items.each do |item|
+          xml.item do
+            xml.code(item.product.code)
+            xml.description(item.product.description)
+            xml.quantity(item.quantity)
+            xml.unitcost(item.product.price)
+            xml.subtotal(item.subtotal_price)
+          end
+        end
+      }
+      xml.total(total)
+    }
+    
+    xml.target!
+  end
+  
   private
     def cart_item_for_product( product )
        @items.find {|item| item.product == product}

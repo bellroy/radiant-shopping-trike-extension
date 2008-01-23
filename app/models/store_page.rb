@@ -177,16 +177,8 @@ class StorePage < Page
     tag.expand
   end
   
-  tag "shopping:checkout:austhink" do |tag|
-    tag.expand
-  end
-  
-  tag "shopping:checkout:austhink:customerform" do |tag|
-    [SitePointController.customer_login_form]
-  end
-  
-  tag "shopping:checkout:austhink:processorder" do |tag|
-    [SitePointController.process_form]
+  tag "shopping:checkout:process" do |tag|
+    [CartController.form_to_payment_processor( tag.attr['processor_url'], tag.attr['next_url'] )]
   end
   
   private

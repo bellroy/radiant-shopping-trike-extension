@@ -1,4 +1,7 @@
-class CartController < ActionController::Base  
+require 'net/https'
+require 'uri'
+
+class CartController < ActionController::Base
   def add_or_update_in_cart
     begin
       product = Product.find(params[:id])
@@ -27,6 +30,18 @@ class CartController < ActionController::Base
     end
     
     redirect_to :back
+  end
+  
+  def submit_to_processor
+    uri = URI.parse( params[:processor_url] )
+    site = Net::HTTP.new( uri.host, uri.port )
+    res = site.post( uri.path, contents_xml, { 'Content-Type' => 'text/xml; charset=utf-8' } )
+
+    raise "Processor did not respond with status 200. Instead gave " + res.code.to_s unless res.code == "200"
+
+    logger.debug "Response from order processor contained: " + res.body
+    
+    redirect_to params[:next_url]
   end
   
   def self.form_to_add_or_update_product_in_cart( product )
@@ -69,6 +84,14 @@ class CartController < ActionController::Base
     "shopping_trike_cart"
   end
   
+  def self.form_to_payment_processor( processor_url, next_url )
+    %Q( <form action="/shopping_trike/cart/submit_to_processor" method="post">
+          <input type="hidden" name="processor_url" value="#{ processor_url }" />
+          <input type="hidden" name="next_url" value="#{ next_url }" />
+          <input name="submit_process" value="create order" type="submit"/>
+        </form>)
+  end
+  
   def self.cart_ajaxify_script( url_base )
     %Q( <script type="text/javascript">
           function cart_update()
@@ -100,5 +123,10 @@ class CartController < ActionController::Base
   
     def empty_cart
       session[:cart] = Cart.new
+    end
+    
+    def contents_xml
+      cart = find_cart
+      cart.xml
     end
 end

@@ -9,7 +9,6 @@ class ShoppingTrikeExtension < Radiant::Extension
   define_routes do |map|
     map.connect 'admin/store/:action', :controller => 'store'
     map.connect 'shopping_trike/cart/:action', :controller => 'cart'
-    map.connect 'shopping_trike/sitepoint/:action', :controller => 'site_point'
   end
   
   def activate
