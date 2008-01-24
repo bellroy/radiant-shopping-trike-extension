@@ -1,5 +1,6 @@
 require 'net/https'
 require 'uri'
+require 'digest/md5'
 
 class CartController < ActionController::Base
   def add_or_update_in_cart
@@ -41,7 +42,9 @@ class CartController < ActionController::Base
 
     logger.debug "Response from order processor contained: " + res.body
     
-    redirect_to params[:next_url]
+    cart = find_cart
+    
+    redirect_to params[:next_url] + "?cart=#{cart.id}"
   end
   
   def self.form_to_add_or_update_product_in_cart( product )
@@ -127,6 +130,20 @@ class CartController < ActionController::Base
     
     def contents_xml
       cart = find_cart
+      cart.id = create_cart_id
       cart.xml
+    end
+    
+    # This is similar to how session keys are generated. Use this for unique cart ids and
+    # _never_ use the session key as we may open ourselves to fixation attacks.
+    def create_cart_id
+      md5 = Digest::MD5::new
+      now = Time::now
+      md5.update(now.to_s)
+      md5.update(String(now.usec))
+      md5.update(String(rand(0)))
+      md5.update(String($$))
+      md5.update('foobar')
+      md5.hexdigest
     end
 end

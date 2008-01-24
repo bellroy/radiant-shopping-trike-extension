@@ -1,5 +1,6 @@
 class Cart
   attr_reader :items
+  attr_accessor :id
   
   def initialize
     @items = []
@@ -46,6 +47,7 @@ class Cart
     xml = Builder::XmlMarkup.new
     xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
     xml.cart{
+      xml.id(id)
       xml.items{
         items.each do |item|
           xml.item do
