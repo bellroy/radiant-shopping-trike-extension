@@ -1,3 +1,51 @@
 = Shopping Trike
 
 A shopping cart for RadiantCMS.
+
+= Notice
+Real documentation is forthcoming.
+
+= An example store
+The following page parts create a simple store with minimal layout.
+
+body:
+  Buy our stuff.<br/><br/>
+
+  <r:shopping:product:each>
+    <r:shopping:product:link>
+      <r:shopping:product:code/>
+    </r:shopping:product:link>
+    <r:shopping:product:addtocart/>
+    <br/>
+  </r:shopping:product:each>
+
+  <r:content part="cart" />
+    
+product:
+  <r:shopping:product:code/>:<r:shopping:product:description/> will only cost you <r:shopping:product:price/> if you buy it right now!
+  <br/><br/>
+
+  Want to buy this product? <r:shopping:product:addtocart/>
+
+  <r:content part="cart"/>
+
+cart:
+  <r:shopping:cart:form>
+  Your cart contains:<br/>
+    <r:shopping:cart:item:each>
+      An item <r:shopping:cart:item:code/> is <r:shopping:cart:item:unitcost />/unit &times; <r:shopping:cart:item:quantity/> = <r:shopping:cart:item:subtotal />, change quantity to:<r:shopping:cart:item:update/> or <r:shopping:cart:item:remove/>
+      <hr/>
+    </r:shopping:cart:item:each>
+    Total cost: <r:shopping:cart:total /><br/>
+    <r:shopping:cart:empty />
+    <r:shopping:cart:update /><br />
+    <r:shopping:cart:checkout /><br/>
+  </r:shopping:cart:form>
+  
+checkout:
+  Review your cart contents:<br/>
+  <r:content part="cart"/>
+
+  <hr/>
+
+  <r:shopping:checkout:process processor_url="http://example.com/cart_capture.html" next_url="http://example.com/payment_step1.html"/>
