@@ -49,3 +49,8 @@ checkout:
   <hr/>
 
   <r:shopping:checkout:process processor_url="http://example.com/cart_capture.html" next_url="http://example.com/payment_step1.html"/>
+
+For the AJAXified shopping cart to work correctly, the layout used for Store pages
+must include the prototype.js library. To include the library simply insert
+  <script src="/javascripts/prototype.js" language="JavaScript" type="text/javascript"></script>
+into you layouts head.
