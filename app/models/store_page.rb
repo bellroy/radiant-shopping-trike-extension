@@ -35,6 +35,8 @@ class StorePage < Page
       tag.attr['part'] || 'cart'
     when :checkout
       tag.attr['part'] || 'checkout'
+    when :eula
+      tag.attr['part'] || 'eula'
     else
       tag.attr['part'] || 'body'
     end
@@ -123,6 +125,14 @@ class StorePage < Page
     [link("/#{ slug }/checkout/", "checkout")]
   end
   
+  tag "shopping:eula" do |tag|
+    tag.expand
+  end
+  
+  tag "shopping:eula:link" do |tag|
+    [link("/#{ slug }/eula/", "proceed with checkout")]
+  end
+  
   tag "shopping:cart:update" do |tag|
     [CartController.cart_form_fragment_to_update_cart]
   end
@@ -178,7 +188,7 @@ class StorePage < Page
   end
   
   tag "shopping:checkout:process" do |tag|
-    [CartController.form_to_payment_processor( tag.attr['processor_url'], tag.attr['next_url'] )]
+    [CartController.form_to_payment_processor( tag.attr['processor_url'], tag.attr['next_url'], "/#{ slug }/eula/" )]
   end
   
   private
@@ -211,6 +221,8 @@ class StorePage < Page
         @page_type = :cart
       elsif code =~ %r{^checkout}
         @page_type = :checkout
+      elsif code =~ %r{^eula}
+        @page_type = :eula
       else
         @product = Product.find_by_code(code)
         @page_type = :product if @product

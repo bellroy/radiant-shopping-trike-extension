@@ -20,6 +20,7 @@ body:
   </r:shopping:product:each>
 
   <r:content part="cart" />
+  <r:shopping:cart:checkout />
     
 product:
   <r:shopping:product:code/>:<r:shopping:product:description/> will only cost you <r:shopping:product:price/> if you buy it right now!
@@ -28,6 +29,7 @@ product:
   Want to buy this product? <r:shopping:product:addtocart/>
 
   <r:content part="cart"/>
+  <r:shopping:cart:checkout />
 
 cart:
   <r:shopping:cart:form>
@@ -39,7 +41,6 @@ cart:
     Total cost: <r:shopping:cart:total /><br/>
     <r:shopping:cart:empty />
     <r:shopping:cart:update /><br />
-    <r:shopping:cart:checkout /><br/>
   </r:shopping:cart:form>
   
 checkout:
@@ -48,7 +49,18 @@ checkout:
 
   <hr/>
 
-  <r:shopping:checkout:process processor_url="http://example.com/cart_capture.html" next_url="http://example.com/payment_step1.html"/>
+  <r:shopping:eula:link />
+  
+eula:
+  <ul>
+    <li>Don't steal our stuff</li>
+    <li>We get your first born child</li>
+    <li>Imagine a fearsomely comprehensively disclaimer of liability. Now fear, comprehensively.</li>
+  </ul>
+
+  <r:shopping:checkout:process processor_url="http://127.0.0.1/~tobin/public/capture.php" next_url="http://127.0.0.1/~tobin/public/land.php" />
+
+
 
 For the AJAXified shopping cart to work correctly, the layout used for Store pages
 must include the prototype.js library. To include the library simply insert
