@@ -2,9 +2,9 @@
 require_dependency 'application'
 
 class ShoppingTrikeExtension < Radiant::Extension
-  version "1.0"
-  description "A shopping cart for RadiantCMS"
-  url "http://code.trike.com.au/radiant/extensions/shopping_trike"
+  version "0.1"
+  description "A simple cart for RadiantCMS"
+  url "http://code.trike.com.au/svn/radiant/extensions/shopping_trike/"
   
   define_routes do |map|
     map.connect 'admin/store/:action', :controller => 'store'

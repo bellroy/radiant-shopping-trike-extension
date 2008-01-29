@@ -1,68 +1,233 @@
 = Shopping Trike
+A simple shopping cart for RadiantCMS.
 
-A shopping cart for RadiantCMS.
+Version 0.1
+Tobin Richard, Tricycle Developments
+tobin.richard@gmail.com
 
-= Notice
-Real documentation is forthcoming.
 
-= An example store
-The following page parts create a simple store with minimal layout.
+= Introduction
+This RadiantCMS extension provides a simple shopping cart. It does not provide complete checkout, customer management or payment processing. Instead, it passes this work off to an external application so you can extend your existing system just far enough to capture the cart from Shopping Trike and take your customer's money (see the section on payment processing for details).
 
-body:
-  Buy our stuff.<br/><br/>
+The cart created by Shopping Trike work fine in old browsers but also includes AJAX functionality for updating cart contents without reloading your store's pages.
 
-  <r:shopping:product:each>
-    <r:shopping:product:link>
-      <r:shopping:product:code/>
-    </r:shopping:product:link>
-    <r:shopping:product:addtocart/>
-    <br/>
-  </r:shopping:product:each>
 
-  <r:content part="cart" />
-  <r:shopping:cart:checkout />
-    
-product:
-  <r:shopping:product:code/>:<r:shopping:product:description/> will only cost you <r:shopping:product:price/> if you buy it right now!
-  <br/><br/>
+= Installation
+Installing Shopping Trike is just like any other radiant extension. Begin by exporting the project's SVN repository into your Radiant site's vendor/extensions/ directory.
 
-  Want to buy this product? <r:shopping:product:addtocart/>
-
-  <r:content part="cart"/>
-  <r:shopping:cart:checkout />
-
-cart:
-  <r:shopping:cart:form>
-  Your cart contains:<br/>
-    <r:shopping:cart:item:each>
-      An item <r:shopping:cart:item:code/> is <r:shopping:cart:item:unitcost />/unit &times; <r:shopping:cart:item:quantity/> = <r:shopping:cart:item:subtotal />, change quantity to:<r:shopping:cart:item:update/> or <r:shopping:cart:item:remove/>
-      <hr/>
-    </r:shopping:cart:item:each>
-    Total cost: <r:shopping:cart:total /><br/>
-    <r:shopping:cart:empty />
-    <r:shopping:cart:update /><br />
-  </r:shopping:cart:form>
+  cd vendor/extensions/
+  svn export http://code.trike.com.au/svn/radiant/extensions/shopping_trike/
   
-checkout:
-  Review your cart contents:<br/>
+Now restart your web-server and login to Radiant's admin interface. Make sure that the Shopping Trike extension is enabled on the extensions admin page.
+
+For the AJAXified shopping cart to work correctly, the layout used for Store pages
+must include the prototype.js library. To include the library insert the following into the layout's head:
+  <script src="/javascripts/prototype.js" language="JavaScript" type="text/javascript"></script>
+
+That's it! If you can see a "Products" tab in the admin interface then you've successfully installed the extension. You can now start creating your store.
+
+
+= Entering and changing products
+Open the products tab in the admin interface and you should see a list of all existing products as well as the option to create new ones.
+
+
+= Creating a store page
+After adding some products you probably want a way for customers to be able to view and buy them. Create a new Radiant page set its type to "Store".
+
+The body of this page will be used as the store's main page. To iterate over your products use  <r:shopping:product:each> ... </r:shopping:product:each> tags.
+
+Within those tags you may use the following tags to display product information:
+* <r:shopping:product:link> ... </r:shopping:product:link> - create a link to the current product's page.
+* <r:shopping:product:code/> - the product's code.
+* <r:shopping:product:addtocart/> - an add to cart form for the product.
+* <r:shopping:product:description/> - the product's description.
+* <r:shopping:product:price/> - the products price.
+
+So a simple store page body might contain the following:
+  <p>Welcome to our store!</p>
+  Here are our products:
+  <ul>
+    <r:shopping:product:each>
+      <li>
+        <r:shopping:product:code/> - <r:shopping:product:price/><br />
+        <r:shopping:product:description/><br/>
+        <r:shopping:product:link>show details</r:shopping:product:link>
+      </li>
+    </r:shopping:product:each>
+  </ul>
+
+
+= Creating product pages
+All products for given store page share the same format. To create such a format add a new part to your store page called "product". The contents of this page part will be used to display all products.
+
+The tags you may use to create this page part are the same as those which may be used inside <r:shopping:product:each> ... </r:shopping:product:each> tags. So a simple product page part might look like the following:
+  <p>
+    <r:shopping:product:code/><br/>
+    <r:shopping:product:price/>
+  </p>
+  <p>
+    <r:shopping:product:description/>
+  </p>
+
+  <p>
+    <r:shopping:product:addtocart/>
+  </p>
+
+
+= Displaying the cart contents
+The above product page provides a form for adding a product to our cart but doesn't allow us to view the cart contents or checkout the cart.
+
+Shopping carts in Shopping Trike are never viewed directly, they are always embedded in other pages. Why? We generally want to display a cart in a store's sidebar and again on the checkout page to allow the customer to review it's contents but we want a uniform appearance. So how do we create this embeddable cart? We create another page part, this time called "cart".
+
+The main cart contents must appear between <r:shopping:cart:form> ... </r:shopping:cart:form> tags. The tags you may use to help you build the cart are:
+* <r:shopping:cart:item:each> ... </r:shopping:cart:item:each> - Iterates over each cart item.
+* <r:shopping:cart:total /> - The total cost of all items in the cart.
+* <r:shopping:cart:empty /> - A button to remove all items from the cart.
+* <r:shopping:cart:update /> - A button to update the quantities of items already in the cart (see the following item tags).
+
+Within <r:shopping:cart:item:each> ... </r:shopping:cart:item:each> tags the following tags are available:
+* <r:shopping:cart:item:code /> - The code of the item.
+* <r:shopping:cart:item:unitcost /> - The price for one of the item.
+* <r:shopping:cart:item:quantity /> - The quantity of the item in the cart.
+* <r:shopping:cart:item:subtotal /> - The total cost of all of the item in the cart.
+* <r:shopping:cart:item:update /> - A textbox where customers may enter a new quantity for the item.
+* <r:shopping:cart:item:remove /> - A button to remove the item from the cart.
+
+So a simple cart page part might look like the following:
+  <p>
+    Your shopping cart:
+  </p>
+  <r:shopping:cart:form>
+    <ul>
+      <r:shopping:cart:item:each>
+        <li>
+          <r:shopping:cart:item:code/> costs <r:shopping:cart:item:unitcost /> per unit<br/>
+          You have <r:shopping:cart:item:quantity/> of these<br/>
+          subtotal: <r:shopping:cart:item:subtotal /><br/>
+          Change quantity: <r:shopping:cart:item:update/><br/>
+          Remove from cart: <r:shopping:cart:item:remove/>
+        </li>
+      </r:shopping:cart:item:each>
+    </ul>
+    <p>
+      Update cart quantities: <r:shopping:cart:update />
+    </p>
+    <p>
+      Total cart price: <r:shopping:cart:total /><br/>
+      Empty cart: <r:shopping:cart:empty /><br />
+    </p>
+  </r:shopping:cart:form>
+
+To include the cart in any of the store page parts use Radiant's built in content tag like so:
+  <r:content part="cart" />
+
+
+= Checking out the cart
+How do we provide a way for users to checkout a cart? We create another page part of course! This time we need a page part called "checkout". The tags of interest when creating checkout page parts are:
+* <r:shopping:checkout:process processor_url="" next_url=""> ... </r:shopping:checkout:process>
+* <r:shopping:eula:link />
+
+The first, <r:shopping:checkout:process> ... </r:shopping:checkout:process> tags create a form which will start the payment process using the external application (read the section on payment processing). You must specify a processor_url and next_url as tag attributes (read the section on payment processing). Inside the tags you may include information about your terms of sale or a link to your EULA. If the user does not check the box saying they agree to these then the payment process wont be started and the will be directed back to the checkout page.
+
+The <r:shopping:eula:link /> tag generates a link that will display your license agreement or terms of sale (see the following section on EULA's).
+
+If you don't want customers to be able to checkout their cart without first reading the EULA then you may exclude the <r:shopping:checkout:process> ... </r:shopping:checkout:process> tags but still use <r:shopping:eula:link /> to move customers through the checkout process.
+
+So a simple checkout page part which displays a customer's cart and directs them the terms and conditions page might look like the following:
+  <p>
+    Review your cart contents:
+  </p>
+  
   <r:content part="cart"/>
 
   <hr/>
 
-  <r:shopping:eula:link />
-  
-eula:
+  To finalise and checkout this cart please proceed to the <r:shopping:eula:link />.
+
+To include a "checkout" link in any of your store's pages use the <r:shopping:cart:checkout/> tag.
+
+
+= EULAs and terms and conditions
+The final page part of interest is the "eula". This contains the set of terms and conditions which your customers must agree with before a cart will be set to the payment processor. You may use the same tags in a eula page part as in a checkout page part.
+
+So a simple eula page part that allows customers to agree to the conditions and proceed to the payment system might look like the following:
   <ul>
     <li>Don't steal our stuff</li>
     <li>We get your first born child</li>
-    <li>Imagine a fearsomely comprehensively disclaimer of liability. Now fear, comprehensively.</li>
+    <li>Any number of unenforceable and legally void conditions would go here</li>
   </ul>
 
-  <r:shopping:checkout:process processor_url="http://127.0.0.1/~tobin/public/capture.php" next_url="http://127.0.0.1/~tobin/public/land.php">I agree to the terms and conditions outlined above</r:shopping:checkout:process>
+  <r:shopping:checkout:process processor_url="https://some.site.com/cart_capture" next_url="https://some.site.com/customer_payment">
+    I agree to the terms and conditions outlined above
+  </r:shopping:checkout:process>
 
 
+= Payment Processing
+As noted above Shopping Trike _does not_ process payments. Instead it relies upon external applications for this functionality.
 
-For the AJAXified shopping cart to work correctly, the layout used for Store pages
-must include the prototype.js library. To include the library simply insert
-  <script src="/javascripts/prototype.js" language="JavaScript" type="text/javascript"></script>
-into you layouts head.
+When a user submits a form created using the <r:shopping:checkout:process processor_url="..." next_url="..."> ... </r:shopping:checkout:process> tags a few things happen. The significant steps are:
+
+1. The submitted form data is inspected to make sure the user agreed to the terms and conditions.
+2. The cart has a unique identifier added to it.
+3. The cart is converted to well-formed XML (examples below).
+4. The cart XML is transmitted to processor_url specified in the tags.
+5. The response from the processor_url is examined to ensure that the server responded with code 200 (OK).
+6. The customer's web browser is redirected to next_url specified in the tags along with the cart id as the GET parameter "cart".
+
+After that it is entirely the receiving application's responsibility to turn the cart XML into whatever model it uses and process payment for the cart. A typical process for the external application would be:
+
+processor_url request:
+1. Receive the cart XML and turn it into some internal order model.
+2. Save the model to a temporary file that can be looked up based on cart ID.
+
+next_url request:
+1. Use the GET parameter "cart" to locate the internal order model's temporary file.
+2. Load the order model and associate it with the customer's session.
+3. Gather payment details.
+4. Process payment.
+5. Record order in audit log.
+
+The XML format produced from Shopping Trike's cart has the following structure:
+  cart
+    id
+    items
+      item
+        code
+        description
+        quantity
+        unitcost
+        subtotal
+      item
+        code
+        description
+        quantity
+        unitcost
+        subtotal
+      item
+        etc...
+        etc...
+
+An example XML cart generated by an imaginary pizza parlour eCommerce system for a customer ordering a single pizza and two garlic breads would look like the following:
+  <?xml version="1.0" encoding="UTF-8"?>
+  <cart>
+    <id>a0ab9343172f2204742ad59745d6d87e</id>
+    <items>
+      <item>
+        <code>PIZZA-F-BBQ-001</code>
+        <description>A family size BBQ pizza fresh from our ovens!</description>
+        <quantity>1</quantity>
+        <unitcost>12.99</unitcost>
+        <subtotal>12.99</subtotal>
+      </item>
+      <item>
+        <code>GARLIC-BREAD</code>
+        <description>Fresh garlic bread. Mmmm Tasty!(tm)</description>
+        <quantity>2</quantity>
+        <unitcost>3.0</unitcost>
+        <subtotal>6.0</subtotal>
+      </item>
+    </items>
+    <total>18.99</total>
+  </cart>
+  
+Future versions of Shopping Trike may extend this format but the tags already present will probably remain as they are.

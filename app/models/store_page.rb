@@ -130,7 +130,7 @@ class StorePage < Page
   end
   
   tag "shopping:eula:link" do |tag|
-    [link("/#{ slug }/eula/", "proceed with checkout")]
+    [link("/#{ slug }/eula/", "terms and conditions")]
   end
   
   tag "shopping:cart:update" do |tag|
