@@ -188,7 +188,7 @@ class StorePage < Page
   end
   
   tag "shopping:checkout:process" do |tag|
-    [CartController.form_to_payment_processor( tag.attr['processor_url'], tag.attr['next_url'], "/#{ slug }/eula/" )]
+    [CartController.form_to_payment_processor( tag.attr['processor_url'], tag.attr['next_url'], tag.expand )]
   end
   
   private

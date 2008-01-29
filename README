@@ -58,7 +58,7 @@ eula:
     <li>Imagine a fearsomely comprehensively disclaimer of liability. Now fear, comprehensively.</li>
   </ul>
 
-  <r:shopping:checkout:process processor_url="http://127.0.0.1/~tobin/public/capture.php" next_url="http://127.0.0.1/~tobin/public/land.php" />
+  <r:shopping:checkout:process processor_url="http://127.0.0.1/~tobin/public/capture.php" next_url="http://127.0.0.1/~tobin/public/land.php">I agree to the terms and conditions outlined above</r:shopping:checkout:process>
 
 
 

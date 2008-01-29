@@ -35,7 +35,7 @@ class CartController < ActionController::Base
   
   def submit_to_processor
     # do nothing if the user did not accept the eula
-    redirect_to params[:eula_url] and return unless params[:agree]
+    redirect_to :back and return unless params[:agree]
     
     
     uri = URI.parse( params[:processor_url] )
@@ -91,12 +91,11 @@ class CartController < ActionController::Base
     "shopping_trike_cart"
   end
   
-  def self.form_to_payment_processor( processor_url, next_url, eula_url )
+  def self.form_to_payment_processor( processor_url, next_url, eula_label_text )
     %Q( <form action="/shopping_trike/cart/submit_to_processor" method="post">
           <input type="hidden" name="processor_url" value="#{ processor_url }" />
           <input type="hidden" name="next_url" value="#{ next_url }" />
-          <input type="hidden" name="eula_url" value="#{ eula_url }" />
-          <input type="checkbox" name="agree" value="yes" /> I agree to the above terms and conditions<br/>
+          <input type="checkbox" name="agree" value="yes" /> #{ eula_label_text }<br/>
           <input name="submit_process" value="create order" type="submit"/>
         </form>)
   end
