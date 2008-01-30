@@ -82,7 +82,7 @@ class StorePage < Page
   end
   
   tag "shopping:product:price" do |tag|
-    @product.price
+    sprintf('%.2f', @product.price )
   end
 
   tag "shopping:product:link" do |tag|
@@ -114,7 +114,7 @@ class StorePage < Page
 
   tag "shopping:cart:total" do |tag|
     cart = get_or_create_cart
-    cart.total
+    sprintf('%.2f', cart.total )
   end
   
   tag "shopping:cart:empty" do |tag|
@@ -164,11 +164,11 @@ class StorePage < Page
   end
 
   tag "shopping:cart:item:unitcost" do |tag|
-    @cart_item.product.price
+    sprintf('%.2f', @cart_item.product.price )
   end
 
   tag "shopping:cart:item:subtotal" do |tag|
-    @cart_item.product.price * @cart_item.quantity
+    sprintf('%.2f', @cart_item.product.price * @cart_item.quantity )
   end
 
   tag "shopping:cart:item:remove" do |tag|

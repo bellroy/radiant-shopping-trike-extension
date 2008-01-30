@@ -56,7 +56,7 @@ class CartController < ActionController::Base
           onsubmit="new Ajax.Request('/shopping_trike/cart/add_or_update_in_cart',
             {asynchronous:true, evalScripts:true, parameters:Form.serialize(this), onSuccess:cart_update}); return false;">
           <input type="hidden" id="product_id" name="id" value="#{ product.id }" />
-          <input id="product_quantity" name="quantity" size="10" type="text" />
+          <input id="product_quantity" name="quantity" size="5" type="text" />
           <input name="commit" type="submit" value="add to cart" />
         </form> )
   end
@@ -72,19 +72,19 @@ class CartController < ActionController::Base
   end
   
   def self.cart_form_fragment_to_remove_an_item_currently_in_cart( product )
-    %Q( <input name="remove_submit[#{ product.id }]" type="submit" value="remove from cart" onclick="Form.getInputs(this.form, null, 'submit_type')[0].value = 'remove'" /> )
+    %Q( <input name="remove_submit[#{ product.id }]" type="submit" value="remove" onclick="Form.getInputs(this.form, null, 'submit_type')[0].value = 'remove'" /> )
   end
   
   def self.cart_form_fragment_to_alter_an_item_quantity_in_cart( product, quantity )
-    %Q( <input name="update[#{ product.id }]" type="text" value="#{ quantity }" /> )
+    %Q( <input name="update[#{ product.id }]" type="text" size="5" value="#{ quantity }" /> )
   end
   
   def self.cart_form_fragment_to_empty_cart
-    %Q( <input name="empty_submit" type="submit" value="empty cart" onclick="Form.getInputs(this.form, null, 'submit_type')[0].value = 'empty'" /> )
+    %Q( <input name="empty_submit" type="submit" value="empty" onclick="Form.getInputs(this.form, null, 'submit_type')[0].value = 'empty'" /> )
   end
   
   def self.cart_form_fragment_to_update_cart
-    %Q( <input name="update_submit" type="submit" value="update quantities" onclick="Form.getInputs(this.form, null, 'submit_type')[0].value = 'update'"/> )
+    %Q( <input name="update_submit" type="submit" value="update" onclick="Form.getInputs(this.form, null, 'submit_type')[0].value = 'update'"/> )
   end
   
   def self.cart_ajaxify_form_div_id
