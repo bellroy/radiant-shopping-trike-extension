@@ -7,7 +7,15 @@ class ShoppingTrikeExtension < Radiant::Extension
   url "http://code.trike.com.au/svn/radiant/extensions/shopping_trike/"
   
   define_routes do |map|
-    map.connect 'admin/store/:action', :controller => 'store'
+    # map.connect 'admin/store/:action', :controller => 'store'
+    # Product Routes
+    map.with_options(:controller => 'admin/product') do |product|
+      product.product_index  'admin/products',                     :action => 'index'
+      product.product_edit   'admin/products/edit/:id',            :action => 'edit'
+      product.product_new    'admin/products/new',                 :action => 'new'
+      product.product_remove 'admin/products/remove/:id',          :action => 'remove'
+    end
+
     map.connect 'shopping_trike/cart/:action', :controller => 'cart'
   end
   
@@ -17,7 +25,7 @@ class ShoppingTrikeExtension < Radiant::Extension
       session :disabled => false
     end
     
-    admin.tabs.add "Products", "/admin/store", :after => "Layouts", :visibility => [:all]
+    admin.tabs.add "Products", "/admin/products", :after => "Layouts", :visibility => [:all]
   end
   
   def deactivate

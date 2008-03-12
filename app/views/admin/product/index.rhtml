@@ -1,0 +1,39 @@
+<h1>Products</h1>
+<table id="products" class="index">
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+      <th>Price</th>
+      <th>Modify</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% unless @products.empty? -%>
+    <% for product in @products %>
+    <tr class="node">
+      <td class="code"><%= link_to h(product.code), product_edit_path(:id => product) %></td>
+      <td class="description"><%= link_to product.description, product_edit_path(:id => product) %></td>
+      <td><%=h product.price %></td>
+      <td class="remove">
+        <%= link_to image_tag("admin/remove.png", :alt => 'Remove Product'),
+                    product_remove_path(:id => product) %>
+      </td>
+    </tr>
+    <% end %>
+  <% else %>
+    <tr>
+      <td colspan="4" class="note">No Products</td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<script type="text/javascript">
+// <![CDATA[
+  new RuledTable('products');
+// ]]>
+</script>
+
+<p>
+  <%= link_to 'New product', product_new_url %>
+</p>

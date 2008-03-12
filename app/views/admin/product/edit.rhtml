@@ -1,0 +1,35 @@
+<% if @product.new_record? -%>
+<h1>New Product</h1>
+<% else -%>
+<h1>Edit Product</h1>
+<% end -%>
+
+<form method="post" action="">
+  <table class="fieldset">
+    <tbody>
+      <tr>
+        <td class="label"><label for="product_code">Code</label></td>
+        <td class="field"><%= text_field :product, :code, :size => 100, :class => 'textbox'  %></td>
+        <td class="help">Required. Only numbers an letters allowed</td>
+      </tr>
+      <tr>
+        <td class="label"><label class="optional" for="product_description">Description</label></td>
+        <td class="field"><%= text_area :product, :description, :size => '40x4' %></td>
+        <td class="help">Optional</td>
+      </tr>
+      <tr>
+        <td class="label"><label for="product_price">Price</label></td>
+        <td class="field"><%= text_field :product, :price %></td>
+        <td class="help">Required, has to be > 0.01</td>
+      </tr>
+    </tbody>
+  </table>  
+  <p class="buttons">
+    <%= save_model_button(@product) %>
+    <%= save_model_and_continue_editing_button(@product) %>
+    or <%= link_to "Cancel", product_index_url %>
+  </p>
+
+</form>
+
+<%= focus 'product_code' %>
