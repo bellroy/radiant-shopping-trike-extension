@@ -9,7 +9,7 @@
      onmouseout="Element.removeClassName(this, 'highlight');">
       <td class="code"><%= link_to h(@product.code), product_edit_path(:id => @product) %></td>
       <td class="description"><%= link_to @product.description, product_edit_path(:id => @product) %></td>
-      <td><%=h @product.price %></td>
+      <td class="product_category"><%= link_to product.product_category, product_edit_path(:id => product) %></td>
     </tr>
   </tbody>
 </table>

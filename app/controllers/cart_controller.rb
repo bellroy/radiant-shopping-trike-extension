@@ -1,8 +1,44 @@
 require 'net/https'
 require 'uri'
 require 'digest/md5'
+require 'ostruct'
 
 class CartController < ActionController::Base
+
+  PRICE_NOT_AVAILABLE = 'N/A'
+
+  def savings_for_product_quantity
+    result = PRICE_NOT_AVAILABLE
+    begin
+      product = Product.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      logger.error("Attempt to lookup invalid savings using product id: #{params[:id]}")
+    else
+      base_pp = product.first_product_price
+      if base_pp
+        base_price = base_pp.price
+        quantity = params[:quantity].to_i
+        this_price = product.price_for_quantity(quantity)
+        result = sprintf("%4.2f", (quantity.to_f * (base_price - this_price)))  if this_price
+      end
+    end
+    render :text => result
+  end
+
+  def price_for_product_quantity
+    result = PRICE_NOT_AVAILABLE
+    begin
+      product = Product.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      logger.error("Attempt to lookup invalid price using product id: #{params[:id]}")
+    else
+      quantity = params[:quantity].to_i
+      this_price = product.price_for_quantity(quantity)
+      result = sprintf("%4.2f", this_price) if this_price
+    end
+    render :text => result
+  end
+
   def add_or_update_in_cart
     begin
       product = Product.find(params[:id])
@@ -13,6 +49,19 @@ class CartController < ActionController::Base
       @cart.add_product_or_increase_quantity(product, params[:quantity].to_i)
     end
     redirect_to :back
+  end
+
+  def expresspurchase
+    begin
+      product = Product.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      logger.error("Attempt to add invalid product to cart using product id: #{params[:id]}")
+    else
+      empty_cart
+      @cart = find_cart
+      @cart.add_product_or_increase_quantity(product, params[:quantity].to_i)
+    end
+    redirect_to params[:next_url] ? params[:next_url] : :back
   end
 
   def process_cart_change
@@ -37,18 +86,18 @@ class CartController < ActionController::Base
     # do nothing if the user did not accept the eula
     redirect_to :back and return unless params[:agree]
     
-    
-    uri = URI.parse( params[:processor_url] )
-    site = Net::HTTP.new( uri.host, uri.port )
-    res = site.post( uri.path, contents_xml, { 'Content-Type' => 'text/xml; charset=utf-8' } )
+    assign_cart_id
+    unless params[:processor_url].blank?
+      uri = URI.parse( params[:processor_url] )
+      site = Net::HTTP.new( uri.host, uri.port )
+      res = site.post( uri.path, contents_xml, { 'Content-Type' => 'text/xml; charset=utf-8' } )
 
-    raise "Processor did not respond with status 200. Instead gave " + res.code.to_s unless res.code == "200"
+      raise "Processor did not respond with status 200. Instead gave " + res.code.to_s unless res.code == "200"
 
-    logger.debug "Response from order processor contained: " + res.body
-    
+      logger.debug "Response from order processor contained: " + res.body
+    end
     cart = find_cart
-    
-    redirect_to params[:next_url] + "?cart=#{cart.id}"
+    redirect_to params[:next_url] + (params[:processor_url].blank? ? '' : "?cart=#{cart.id}")
   end
   
   def self.form_to_add_or_update_product_in_cart( product )
@@ -58,6 +107,17 @@ class CartController < ActionController::Base
           <input type="hidden" id="product_id" name="id" value="#{ product.id }" />
           <input id="product_quantity" name="quantity" size="5" type="text" />
           <input name="commit" type="submit" value="add to cart" />
+        </form> )
+  end
+  
+  def self.form_to_express_purchase_product( product, next_url, quantity, src )
+    quantity_input_type = quantity ? 'hidden' : 'text'
+    %Q( <form action="/shopping_trike/cart/expresspurchase" method="post"
+          >
+          <input type="hidden" id="product_id" name="id" value="#{ product.id }" />
+          <input id="product_quantity" name="quantity" size="5" type="#{quantity_input_type}" value="#{quantity}" />
+          <input id="product_next_url" name="next_url" type="hidden" value="#{next_url}" />
+          <input type="image" name="commit" type="submit" src="#{src}" value="express purchase" />
         </form> )
   end
   
@@ -109,6 +169,7 @@ class CartController < ActionController::Base
         </script> )
   end
   
+  
   private
     def update_in_cart( prod_id, quantity )
       cart = find_cart
@@ -135,8 +196,12 @@ class CartController < ActionController::Base
     
     def contents_xml
       cart = find_cart
-      cart.id = create_cart_id
       cart.xml
+    end
+    
+    def assign_cart_id
+      cart = find_cart
+      cart.id = create_cart_id
     end
     
     # This is similar to how session keys are generated. Use this for unique cart ids and
@@ -151,4 +216,5 @@ class CartController < ActionController::Base
       md5.update('foobar')
       md5.hexdigest
     end
+    
 end

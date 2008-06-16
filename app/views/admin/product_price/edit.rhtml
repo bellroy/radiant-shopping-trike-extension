@@ -1,0 +1,33 @@
+<% @product = @product_price.product -%>
+<% if @product_price.new_record? -%>
+<h1>New Product Price</h1>
+<% else -%>
+<h1>Edit Product Price</h1>
+<% end -%>
+
+<h2><%= h @product.code %>: <%= h @product.description %></h2>
+
+<form method="post" action="">
+  <table class="fieldset">
+    <tbody>
+      <tr>
+        <td class="label"><label for="product_price_min_quantity">Minimum Quantity</label></td>
+        <td class="field"><%= text_field :product_price, :min_quantity, :size => 100, :class => 'textbox'  %></td>
+        <td class="help">Required. Only numbers allowed.</td>
+      </tr>
+      <tr>
+        <td class="label"><label for="product_price_price">Price</label></td>
+        <td class="field"><%= text_field :product_price, :price, :size => 100, :class => 'textbox' %></td>
+        <td class="help">Required. Price at or above Minimum Quantity in dollars and cents.</td>
+      </tr>
+    </tbody>
+  </table>  
+  <p class="buttons">
+    <%= save_model_button(@product_price) %>
+    <%= save_model_and_continue_editing_button(@product_price) %>
+    or <%= link_to "Cancel", product_index_url %>
+  </p>
+
+</form>
+
+<%= focus 'product_price_min_quantity' %>

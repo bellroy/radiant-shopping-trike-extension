@@ -4,22 +4,30 @@ require File.dirname(__FILE__) + '/../test_helper'
 CartController.class_eval { def rescue_action(e) raise e end }
 
 class CartControllerTest < Test::Unit::TestCase
+
   def setup
     @controller = CartController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
     
+    ProductPrice.delete_all
+    Product.delete_all
+
     # create two test products
     @product_a = Product.new
     @product_a.code = "PROD-A"
     @product_a.description = "Test product A."
-    @product_a.price = 1.00
+    @product_a.product_category = "bCisive"
+    @product_a.product_prices << ProductPrice.new(:min_quantity => 0, :price => 1.00)
+    @product_a.product_prices << ProductPrice.new(:min_quantity => 10, :price => 0.90)
     @product_a.save!
     
     @product_b = Product.new
     @product_b.code = "PROD-B"
     @product_b.description = "Test product B."
-    @product_b.price = 2.00
+    @product_b.product_category = "bCisive"
+    @product_b.product_prices << ProductPrice.new(:min_quantity => 0, :price => 2.00)
+    @product_b.product_prices << ProductPrice.new(:min_quantity => 10, :price => 1.80)
     @product_b.save!
     
     # since most cart controller actions redirect we need a referer
@@ -126,14 +134,70 @@ class CartControllerTest < Test::Unit::TestCase
     assert session[:cart].items.length == 1
   end
   
-  def test_that_cart_total_is_calculated_correctly
+  def test_that_cart_total_is_calculated_correctly_for_first_price_break_with_and_without_gst
     # insert five units of products A and B
     insert_into_cart( @product_a, 5 )
     insert_into_cart( @product_b, 5 )
     
     # a = 1, b = 2
     # 5a + 5b = 15
-    assert session[:cart].total == 15.00
+    assert_in_delta 16.50, session[:cart].total, 0.0001
+    session[:cart].gst_charged = false
+    assert_in_delta 15.00, session[:cart].total, 0.0001
+    session[:cart].gst_charged = true
+    assert_in_delta 16.50, session[:cart].total, 0.0001
+  end
+  
+  def test_that_cart_total_is_calculated_correctly_for_second_price_break_with_and_without_gst
+    # insert five units of products A and B
+    insert_into_cart( @product_a, 10 )
+    insert_into_cart( @product_b, 10 )
+    
+    # a = 0.90, b = 1.80
+    # 10a + 10b = 9.00 + 18.00 = 27.00
+    assert_in_delta 29.70, session[:cart].total, 0.0001
+    session[:cart].gst_charged = false
+    assert_in_delta 27.00, session[:cart].total, 0.0001
+    session[:cart].gst_charged = true
+    assert_in_delta 29.70, session[:cart].total, 0.0001
+  end
+  
+  def test_savings_for_product_quantity_returns_price
+    get :savings_for_product_quantity, {:id => @product_a.id, :quantity => 1}
+    assert_response :success
+    assert_equal '0.00', @response.body
+    
+    get :savings_for_product_quantity, {:id => @product_b.id, :quantity => 20}
+    assert_response :success
+    #1.80 * 20 = 36.00 which is 4.00 less then 2.00 * 20
+    assert_equal '4.00', @response.body
+  end
+  
+  def test_savings_for_product_quantity_returns_na_for_invalid_values
+    get :savings_for_product_quantity, {:id => '987654321', :quantity => 1}
+    assert_response :success
+    assert_equal 'N/A', @response.body
+
+    get :savings_for_product_quantity, {:id => @product_a.id, :quantity => -1}
+    assert_response :success
+    assert_equal 'N/A', @response.body
+  end
+  
+  def test_price_for_product_quantity_returns_price
+    get :price_for_product_quantity, {:id => @product_a.id, :quantity => 1}
+    assert_response :success
+    assert_equal '1.00', @response.body
+
+    get :price_for_product_quantity, {:id => @product_b.id, :quantity => 20}
+    assert_response :success
+    assert_equal '1.80', @response.body
+  end
+  
+  def test_price_for_product_quantity_returns_na_for_invalid_values
+    get :price_for_product_quantity, {:id => '987654321', :quantity => 1}
+    assert_equal 'N/A', @response.body
+    get :price_for_product_quantity, {:id => @product_a.id, :quantity => -1}
+    assert_equal 'N/A', @response.body
   end
   
   private

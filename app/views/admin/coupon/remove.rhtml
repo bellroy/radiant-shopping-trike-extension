@@ -1,0 +1,21 @@
+<% @product = @coupon.product -%>
+<h1>Remove Coupon</h1>
+<h2><%= h @product.code %>: <%= h @product.description %></h2>
+
+<p>Are you sure you want to <strong class="warning">permanently remove</strong>
+   the following coupon?</p>
+
+<table id="coupons" class="index">
+  <tbody>
+    <tr class="node level-1"
+     onmouseover="Element.addClassName(this, 'highlight');"
+     onmouseout="Element.removeClassName(this, 'highlight');">
+      <td class="code"><%= link_to h(@coupon.code), coupon_edit_path(:id => @coupon) %></td>
+    </tr>
+  </tbody>
+</table>
+
+<form method="post" action="">
+  <p class="buttons"><%= submit_tag "Delete Coupon", :class => 'button' %>
+    or <%= link_to 'Cancel', product_index_path %></p>
+</form>

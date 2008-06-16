@@ -4,28 +4,66 @@
     <tr>
       <th>Code</th>
       <th>Description</th>
-      <th>Price</th>
+      <th>Product Category</th>
+      <th>Related</th>
       <th>Modify</th>
     </tr>
   </thead>
   <tbody>
-  <% unless @products.empty? -%>
-    <% for product in @products %>
+<% unless @products.empty? -%>
+<%   for product in @products -%>
     <tr class="node">
       <td class="code"><%= link_to h(product.code), product_edit_path(:id => product) %></td>
-      <td class="description"><%= link_to product.description, product_edit_path(:id => product) %></td>
-      <td><%=h product.price %></td>
+      <td class="description"><%= link_to h(product.description), product_edit_path(:id => product) %></td>
+      <td class="product_category"><%= link_to h(product.product_category), product_edit_path(:id => product) %></td>
+      <td class="related">
+        <table id="<%= dom_id(product, "prices_") %>">
+          <thead>
+            <tr>
+              <th>Minimum Quantity</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+<%     for product_price in product.product_prices -%>
+            <tr>
+              <td class="min_quantity"><%= link_to h(product_price.min_quantity), product_price_edit_path(:id => product_price) -%></td>
+              <td class="price"><%= link_to h(product_price.price), product_price_edit_path(:id => product_price) -%></td>
+            </tr>
+<%     end -%>
+          </tbody>
+        </table>
+        <p><%= link_to "New price break", product_price_new_url(:product_id => product) -%></p>
+        <table id="<%= dom_id(product, "coupons_") %>">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Expiration Date</th>
+              <th>Discount per Order</th>
+            </tr>
+          </thead>
+<%     for coupon in product.coupons -%>
+            <tr>
+              <td class="code"><%= link_to h(coupon.code), coupon_edit_path(:id => coupon) -%></td>
+              <td class="expiration_date"><%= link_to h(coupon.expiration_date), coupon_edit_path(:id => coupon) -%></td>
+              <td class="discount_per_order"><%= link_to h(coupon.discount_per_order), coupon_edit_path(:id => coupon) -%></td>
+            </tr>
+<%     end -%>
+          </tbody>
+        </table>
+        <p><%= link_to "New coupon", coupon_new_url(:product_id => product) -%></p>
+      </td>
       <td class="remove">
         <%= link_to image_tag("admin/remove.png", :alt => 'Remove Product'),
                     product_remove_path(:id => product) %>
       </td>
     </tr>
-    <% end %>
-  <% else %>
+<%   end -%>
+<% else -%>
     <tr>
       <td colspan="4" class="note">No Products</td>
     </tr>
-  <% end %>
+<% end -%>
   </tbody>
 </table>
 <script type="text/javascript">

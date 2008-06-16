@@ -17,20 +17,21 @@ class ProductTest < Test::Unit::TestCase
     assert ! product.save
   end
   
-  def test_that_a_product_with_no_price_is_invalid
-    product = product_with_price( nil )
-    assert ! product.save
-  end
-  
-  def test_that_a_product_with_a_negative_price_is_invalid
-    product = product_with_price( -0.99 )
-    assert ! product.save
-  end
-  
-  def test_that_a_product_with_a_zero_price_is_invalid
-    product = product_with_price( 0.00 )
-    assert ! product.save
-  end
+  # TO DO
+#   def test_that_a_product_with_no_price_is_invalid
+#     product = product_with_price( nil )
+#     assert ! product.save
+#   end
+#   
+#   def test_that_a_product_with_a_negative_price_is_invalid
+#     product = product_with_price( -0.99 )
+#     assert ! product.save
+#   end
+#   
+#   def test_that_a_product_with_a_zero_price_is_invalid
+#     product = product_with_price( 0.00 )
+#     assert ! product.save
+#   end
   
   def test_that_a_product_with_a_resrved_name_is_invalid
     %w{checkout eula cart}.each do |reserved_code|
@@ -44,16 +45,8 @@ class ProductTest < Test::Unit::TestCase
     def product_with_code( code )
       product = Product.new
       product.code = code
-      product.price = 0.99
       product.description = "A test product!"
       product
     end
     
-    def product_with_price( price )
-      product = Product.new
-      product.code = "test-item"
-      product.description = "A test item with a given price!"
-      product.price = price
-      product
-    end
 end

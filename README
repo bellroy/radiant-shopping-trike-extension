@@ -41,7 +41,7 @@ Within those tags you may use the following tags to display product information:
 * <r:shopping:product:code/> - the product's code.
 * <r:shopping:product:addtocart/> - an add to cart form for the product.
 * <r:shopping:product:description/> - the product's description.
-* <r:shopping:product:price/> - the products price.
+* <r:shopping:product:price quantity="1"/> - the products price for the given quantity (default quantity=1).
 
 So a simple store page body might contain the following:
   <p>Welcome to our store!</p>
@@ -73,6 +73,20 @@ The tags you may use to create this page part are the same as those which may be
     <r:shopping:product:addtocart/>
   </p>
 
+= Express Purchase
+
+Use
+    <r:shopping:product:expresspurchase next_url="/purchase/payment" quantity=1 />
+
+within a shopping:product:each loop.
+
+To produce a button that immediately overrides the existing cart with the specified quantity of this product. If no quantity is specified, then an input field for the quantity is also produced. After processing the controller redirects back to the same page, or next_url if specified.
+
+You can set next_url to point to the eula page or the payment page.
+
+To use with a specific product instead of all products in the each loop, use the tags
+ <r:shopping:product:each only="prodcode anotherproduct"> ... </r:shopping:product:find>
+Where there are multiple products to be selected, list them separated with blanks. Invalid product codes will be ignored.
 
 = Displaying the cart contents
 The above product page provides a form for adding a product to our cart but doesn't allow us to view the cart contents or checkout the cart.
@@ -87,9 +101,9 @@ The main cart contents must appear between <r:shopping:cart:form> ... </r:shoppi
 
 Within <r:shopping:cart:item:each> ... </r:shopping:cart:item:each> tags the following tags are available:
 * <r:shopping:cart:item:code /> - The code of the item.
-* <r:shopping:cart:item:unitcost /> - The price for one of the item.
+* <r:shopping:cart:item:unitcost /> - The price for each item at the current quantity.
 * <r:shopping:cart:item:quantity /> - The quantity of the item in the cart.
-* <r:shopping:cart:item:subtotal /> - The total cost of all of the item in the cart.
+* <r:shopping:cart:item:subtotal /> - The total cost for that quantity of that item in the cart.
 * <r:shopping:cart:item:update /> - A textbox where customers may enter a new quantity for the item.
 * <r:shopping:cart:item:remove /> - A button to remove the item from the cart.
 
@@ -169,10 +183,20 @@ When a user submits a form created using the <r:shopping:checkout:process proces
 
 1. The submitted form data is inspected to make sure the user agreed to the terms and conditions.
 2. The cart has a unique identifier added to it.
-3. The cart is converted to well-formed XML (examples below).
-4. The cart XML is transmitted to processor_url specified in the tags.
-5. The response from the processor_url is examined to ensure that the server responded with code 200 (OK).
-6. The customer's web browser is redirected to next_url specified in the tags along with the cart id as the GET parameter "cart".
+3. If processor_url is specified in tags then
+   a. The cart is converted to well-formed XML (examples below).
+   b. The cart XML is transmitted to processor_url specified in the tags.
+   c. The response from the processor_url is examined to ensure that the server responded with code 200 (OK).
+6. The customer's web browser is redirected to next_url specified in the tags. If processor_url is specified in tags then the cart id is passed as the GET parameter "cart".
+
+= Internal Processing
+
+where the next_url is local to this server, then the cart may be accessed via session[:cart] 
+
+
+= External Processing
+
+External processing is enabled by the processor_url specified in tags 
 
 After that it is entirely the receiving application's responsibility to turn the cart XML into whatever model it uses and process payment for the cart. A typical process for the external application would be:
 

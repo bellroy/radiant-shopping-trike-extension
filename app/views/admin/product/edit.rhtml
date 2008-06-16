@@ -10,7 +10,7 @@
       <tr>
         <td class="label"><label for="product_code">Code</label></td>
         <td class="field"><%= text_field :product, :code, :size => 100, :class => 'textbox'  %></td>
-        <td class="help">Required. Only numbers an letters allowed</td>
+        <td class="help">Required. Only numbers and letters allowed</td>
       </tr>
       <tr>
         <td class="label"><label class="optional" for="product_description">Description</label></td>
@@ -18,9 +18,9 @@
         <td class="help">Optional</td>
       </tr>
       <tr>
-        <td class="label"><label for="product_price">Price</label></td>
-        <td class="field"><%= text_field :product, :price %></td>
-        <td class="help">Required, has to be > 0.01</td>
+        <td class="label"><label for="product_product_category">Product Category</label></td>
+        <td class="field"><%= text_field :product, :product_category, :size => 100, :class => 'textbox' %></td>
+        <td class="help">Required. One of <%= currently_used_product_categories %></td>
       </tr>
     </tbody>
   </table>  

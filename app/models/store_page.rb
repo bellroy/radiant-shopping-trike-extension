@@ -4,6 +4,8 @@ class StorePage < Page
     other tags that will prove useful.
   }
   
+  attr_accessor :form_errors
+
   def process( request, response )
     @session = request.session
     super( request, response )
@@ -42,8 +44,8 @@ class StorePage < Page
     end
   end
   
-  # The cart page is rendered via AJAX and inserted into complete pages it must not include
-  # a layout.
+  # The cart page is rendered via AJAX and inserted into complete pages it
+  # must not include a layout.
   def render
     if @page_type == :cart
       render_part( :cart )
@@ -61,8 +63,15 @@ class StorePage < Page
   end
   
   tag "shopping:product:each" do |tag|
+    products = []
+    if ! tag.attr['only'].blank?
+      products = tag.attr['only'].split(' ').collect { |code| Product.find_by_code(code) }
+      products.compact!
+    else
+      products = Product.find(:all)
+    end
     result = []
-    Product.find(:all).each do |item|
+    products.each do |item|
       @product = item
       result << tag.expand
     end
@@ -71,6 +80,11 @@ class StorePage < Page
   
   tag "shopping:product:addtocart" do |tag|
     [CartController.form_to_add_or_update_product_in_cart( @product )]
+  end
+  
+  tag "shopping:product:expresspurchase" do |tag|
+    img_src = "http://#{tag.render('img_host')}#{tag.attr['src']}"
+    [CartController.form_to_express_purchase_product( @product, tag.attr['next_url'], tag.attr['quantity'], img_src )]
   end
   
   tag "shopping:product:code" do |tag|
@@ -82,7 +96,7 @@ class StorePage < Page
   end
   
   tag "shopping:product:price" do |tag|
-    sprintf('%.2f', @product.price )
+    sprintf('%.2f', @product.price_for_quantity(tag.attr['quantity'] || 1))
   end
 
   tag "shopping:product:link" do |tag|
@@ -164,11 +178,11 @@ class StorePage < Page
   end
 
   tag "shopping:cart:item:unitcost" do |tag|
-    sprintf('%.2f', @cart_item.product.price )
+    sprintf('%4.2f', @cart_item.product.price_for_quantity(@cart_item.quantity))
   end
 
   tag "shopping:cart:item:subtotal" do |tag|
-    sprintf('%.2f', @cart_item.product.price * @cart_item.quantity )
+    sprintf('%4.2f', @cart_item.product.price_for_quantity(@cart_item.quantity) * @cart_item.quantity)
   end
 
   tag "shopping:cart:item:remove" do |tag|
@@ -191,7 +205,11 @@ class StorePage < Page
     [CartController.form_to_payment_processor( tag.attr['processor_url'], tag.attr['next_url'], tag.expand )]
   end
   
-  private
+  tag "shopping:form_errors" do |tag|
+    form_errors ? "<div class=\"form_errors\"><p>#{form_errors}</p></div>" : ""
+  end
+  
+  protected
     def link( url, text )
        %Q(<a href="#{ url }">#{ text }</a>)
     end
@@ -207,7 +225,6 @@ class StorePage < Page
     end
 
     def request_uri
-      puts "\n\n\n--\n#{request.inspect}\n--\n\n\n"
       request.request_uri unless request.nil?
     end
 
@@ -217,11 +234,11 @@ class StorePage < Page
 
     def page_type_and_required_models(request_uri = self.request_uri)
       code = $1 if request_uri =~ %r{#{parent.url unless parent.nil?}([^/]+)/?$}
-      if code =~ %r{^cart}
+      if code == 'cart'
         @page_type = :cart
-      elsif code =~ %r{^checkout}
+      elsif code == 'checkout'
         @page_type = :checkout
-      elsif code =~ %r{^eula}
+      elsif code == 'eula'
         @page_type = :eula
       else
         @product = Product.find_by_code(code)

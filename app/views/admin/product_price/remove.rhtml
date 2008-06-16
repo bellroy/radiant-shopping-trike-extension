@@ -1,0 +1,21 @@
+<% @product = @product_price.product -%>
+<h1>Remove Product Price</h1>
+<h2><%= h @product.code %>: <%= h @product.description %></h2>
+
+<p>Are you sure you want to <strong class="warning">permanently remove</strong>
+   the following Product Price?</p>
+
+<table id="product_prices" class="index">
+  <tbody>
+    <tr class="node level-1"
+     onmouseover="Element.addClassName(this, 'highlight');"
+     onmouseout="Element.removeClassName(this, 'highlight');">
+      <td class="code"><%= link_to h(@product_price.code), product_price_edit_path(:id => @product_price) %></td>
+    </tr>
+  </tbody>
+</table>
+
+<form method="post" action="">
+  <p class="buttons"><%= submit_tag "Delete Product Price", :class => 'button' %>
+    or <%= link_to 'Cancel', product_index_path %></p>
+</form>

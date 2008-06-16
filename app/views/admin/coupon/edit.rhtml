@@ -1,0 +1,38 @@
+<% @product = @coupon.product -%>
+<% if @coupon.new_record? -%>
+<h1>New Coupon</h1>
+<% else -%>
+<h1>Edit Coupon</h1>
+<% end -%>
+
+<h2><%= h @product.code %>: <%= h @product.description %></h2>
+
+<form method="post" action="">
+  <table class="fieldset">
+    <tbody>
+      <tr>
+        <td class="label"><label for="coupon_code">Code</label></td>
+        <td class="field"><%= text_field :coupon, :code, :size => 100, :class => 'textbox'  %></td>
+        <td class="help">Required. Only numbers and letters allowed</td>
+      </tr>
+      <tr>
+        <td class="label"><label class="optional" for="coupon_expiration_date">Expiration Date</label></td>
+        <td class="field"><%= text_field :coupon, :expiration_date, :size => 100, :class => 'textbox' %></td>
+        <td class="help">Optional, enter as yyyy-mm-dd (4 digit year, 2 digit month, 2 digit day)</td>
+      </tr>
+      <tr>
+        <td class="label"><label for="coupon_discount_per_order">Discount per order</label></td>
+        <td class="field"><%= text_field :coupon, :discount_per_order, :size => 100, :class => 'textbox' %></td>
+        <td class="help">Required. Discount per order (regardless of product count in order) in dollars and cents.</td>
+      </tr>
+    </tbody>
+  </table>  
+  <p class="buttons">
+    <%= save_model_button(@coupon) %>
+    <%= save_model_and_continue_editing_button(@coupon) %>
+    or <%= link_to "Cancel", product_index_url %>
+  </p>
+
+</form>
+
+<%= focus 'coupon_code' %>
