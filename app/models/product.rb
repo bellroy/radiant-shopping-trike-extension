@@ -22,10 +22,12 @@ class Product < ActiveRecord::Base
     pp && pp.price.to_f
   end
   
+  def total_for_quantity(quantity)
+    price_for_quantity(quantity) * quantity
+  end
+  
   def price_and_total_for_quantity(quantity)
-    price = price_for_quantity(quantity)
-    total = quantity*price
-    return [price,total]
+    [price_for_quantity(quantity), total_for_quantity(quantity)]
   end
   
   # savings_for_quantity(quantity)
