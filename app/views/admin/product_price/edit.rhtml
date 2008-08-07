@@ -7,17 +7,17 @@
 
 <h2><%= h @product.code %>: <%= h @product.description %></h2>
 
-<form method="post" action="">
+<% form_for :product_price, @product_price, :url => '', :method => :post do |f| %>
   <table class="fieldset">
     <tbody>
       <tr>
         <td class="label"><label for="product_price_min_quantity">Minimum Quantity</label></td>
-        <td class="field"><%= text_field :product_price, :min_quantity, :size => 100, :class => 'textbox'  %></td>
+        <td class="field"><%= f.text_field :min_quantity, :size => 100, :class => 'textbox'  %></td>
         <td class="help">Required. Only numbers allowed.</td>
       </tr>
       <tr>
         <td class="label"><label for="product_price_price">Price</label></td>
-        <td class="field"><%= text_field :product_price, :price, :size => 100, :class => 'textbox' %></td>
+        <td class="field"><%= f.text_field :price, :size => 100, :class => 'textbox' %></td>
         <td class="help">Required. Price at or above Minimum Quantity in dollars and cents.</td>
       </tr>
     </tbody>
@@ -27,7 +27,6 @@
     <%= save_model_and_continue_editing_button(@product_price) %>
     or <%= link_to "Cancel", product_index_url %>
   </p>
-
-</form>
+<% end %>
 
 <%= focus 'product_price_min_quantity' %>

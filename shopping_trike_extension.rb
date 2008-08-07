@@ -23,6 +23,7 @@ class ShoppingTrikeExtension < Radiant::Extension
       product_price.product_price_remove 'admin/product_prices/remove/:id',               :action => 'remove'
     end
     map.with_options(:controller => 'admin/coupon') do |coupon|
+      # radiant does things very different. edit is edit AND new, and is POSTed to both, not PUT
       coupon.coupon_edit   'admin/coupons/edit/:id',                 :action => 'edit'
       coupon.coupon_new    'admin/products/:product_id/coupons/new', :action => 'new'
       coupon.coupon_remove 'admin/coupons/remove/:id',               :action => 'remove'
