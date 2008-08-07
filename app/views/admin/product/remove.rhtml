@@ -14,7 +14,7 @@
   </tbody>
 </table>
 
-<form method="post" action="">
+<% form_tag '' do %>
   <p class="buttons"><%= submit_tag "Delete Product", :class => 'button' %>
     or <%= link_to 'Cancel', product_index_path %></p>
-</form>
+<% end %>
