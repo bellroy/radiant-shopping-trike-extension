@@ -4,22 +4,22 @@
 <h1>Edit Product</h1>
 <% end -%>
 
-<form method="post" action="">
+<% form_for :product, @product, :url => '', :method => :post do |f| %>
   <table class="fieldset">
     <tbody>
       <tr>
         <td class="label"><label for="product_code">Code</label></td>
-        <td class="field"><%= text_field :product, :code, :size => 100, :class => 'textbox'  %></td>
+        <td class="field"><%= f.text_field :code, :size => 100, :class => 'textbox'  %></td>
         <td class="help">Required. Only numbers and letters allowed</td>
       </tr>
       <tr>
         <td class="label"><label class="optional" for="product_description">Description</label></td>
-        <td class="field"><%= text_area :product, :description, :size => '40x4' %></td>
+        <td class="field"><%= f.text_area :description, :size => '40x4' %></td>
         <td class="help">Optional</td>
       </tr>
       <tr>
         <td class="label"><label for="product_product_category">Product Category</label></td>
-        <td class="field"><%= text_field :product, :product_category, :size => 100, :class => 'textbox' %></td>
+        <td class="field"><%= f.text_field :product_category, :size => 100, :class => 'textbox' %></td>
         <td class="help">Required. One of <%= currently_used_product_categories %></td>
       </tr>
     </tbody>
@@ -29,7 +29,6 @@
     <%= save_model_and_continue_editing_button(@product) %>
     or <%= link_to "Cancel", product_index_url %>
   </p>
-
-</form>
+<% end %>
 
 <%= focus 'product_code' %>

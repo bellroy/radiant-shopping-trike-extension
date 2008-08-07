@@ -17,6 +17,9 @@ end
 if File.directory?(File.dirname(__FILE__) + "/matchers")
   Dir[File.dirname(__FILE__) + "/matchers/*.rb"].each {|file| require file }
 end
+if File.directory?(File.dirname(__FILE__) + "/shared")
+  Dir[File.dirname(__FILE__) + "/shared/*.rb"].each {|file| require file }
+end
 
 Spec::Runner.configure do |config|
   # config.use_transactional_fixtures = true
