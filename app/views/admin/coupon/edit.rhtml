@@ -7,7 +7,7 @@
 
 <h2><%= h @product.code %>: <%= h @product.description %></h2>
 
-<% form_for @coupon, :url => '' do |f| %>
+<% form_for :coupon, @coupon, :url => '', :method => :post do |f| %>
   <table class="fieldset">
     <tbody>
       <tr>
