@@ -2,13 +2,14 @@ class Cart
   attr_reader :items
   attr_accessor :id
   attr_accessor :gst_charged
+  attr_accessor 
   
   def initialize(options = {:gst_charged => true})
     @items = []
     options.each_pair {|k, v| self.send(:"#{k}=", v) }
   end
   
-  def add_product_or_increase_quantity(product, quantity)
+  def add_product_or_increase_quantity(product, quantity, upgrade = false)
     if product.is_a?(Coupon)
       matching_product = cart_item_for_product( product.product )
       if coupon || (quantity > 1)
@@ -25,7 +26,7 @@ class Cart
       if current_item
         current_item.quantity += quantity
       else
-        current_item = CartItem.new(product, quantity)
+        current_item = CartItem.new(product, quantity, upgrade)
         @items << current_item
       end
     end

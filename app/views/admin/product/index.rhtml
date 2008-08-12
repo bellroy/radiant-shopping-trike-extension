@@ -27,7 +27,7 @@
           <tbody>
 <%     for product_price in product.product_prices -%>
             <tr>
-              <td class="min_quantity"><%= link_to h(product_price.min_quantity), product_price_edit_path(:id => product_price) -%></td>
+              <td class="min_quantity"><%= link_to h(product_price.description), product_price_edit_path(:id => product_price) -%></td>
               <td class="price"><%= link_to h(product_price.price), product_price_edit_path(:id => product_price) -%></td>
             </tr>
 <%     end -%>

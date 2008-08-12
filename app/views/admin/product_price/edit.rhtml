@@ -13,12 +13,17 @@
       <tr>
         <td class="label"><label for="product_price_min_quantity">Minimum Quantity</label></td>
         <td class="field"><%= f.text_field :min_quantity, :size => 100, :class => 'textbox'  %></td>
-        <td class="help">Required. Only numbers allowed.</td>
+        <td class="help">Required. Only numbers allowed. (not required for upgrade price)</td>
       </tr>
       <tr>
         <td class="label"><label for="product_price_price">Price</label></td>
         <td class="field"><%= f.text_field :price, :size => 100, :class => 'textbox' %></td>
         <td class="help">Required. Price at or above Minimum Quantity in dollars and cents.</td>
+      </tr>
+      <tr>
+        <td class="label"><label for="product_price_upgrade" >Upgrade?</label></td>
+        <td class="field" style="text-align:left;"><%= f.check_box :upgrade %></td>
+        <td class="help">Is this price only available as an upgrade with a valid previous license key?</td>
       </tr>
     </tbody>
   </table>  
