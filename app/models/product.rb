@@ -10,7 +10,7 @@ class Product < ActiveRecord::Base
   has_many :coupons, :dependent => :destroy
   
   def product_price_for_quantity(quantity)
-    self.product_prices.find(:first, :conditions => ['min_quantity <= ? AND `upgrade` IS NULL', quantity], :order => 'min_quantity desc')
+    self.product_prices.find(:first, :conditions => ['min_quantity <= ? AND `upgrade` != 1', quantity], :order => 'min_quantity desc')
   end
 
   def first_product_price
