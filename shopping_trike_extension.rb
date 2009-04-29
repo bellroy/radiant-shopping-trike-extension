@@ -16,6 +16,7 @@ class ShoppingTrikeExtension < Radiant::Extension
       product.product_edit   'admin/products/edit/:id',   :action => 'edit'
       product.product_new    'admin/products/new',        :action => 'new'
       product.product_remove 'admin/products/remove/:id', :action => 'remove'
+      product.update_ccy     'admin/products/ccy/edit/:ccy', :action => 'update_ccy', :ccy => /[a-z]{3}-[a-z]{3}/
     end
     map.with_options(:controller => 'admin/product_price') do |product_price|
       product_price.product_price_edit   'admin/product_prices/edit/:id',                 :action => 'edit'
@@ -28,7 +29,7 @@ class ShoppingTrikeExtension < Radiant::Extension
       coupon.coupon_new    'admin/products/:product_id/coupons/new', :action => 'new'
       coupon.coupon_remove 'admin/coupons/remove/:id',               :action => 'remove'
     end
-    
+
     map.connect 'shopping_trike/cart/:action', :controller => 'cart'
   end
   

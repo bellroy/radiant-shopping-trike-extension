@@ -1,4 +1,40 @@
+<%= javascript_include_tag "controls" -%>
 <h1>Products</h1>
+
+<h2>Currency Conversion Rates</h2>
+<table id="forex" class="index" style="width: 40%;">
+  <thead>
+    <tr>
+      <th>Source</th>
+      <th>Target</th>
+      <th>Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+<% unless @ccy_conversions.empty? -%>
+<%   for conversion in @ccy_conversions -%>
+<%   rate_id = "#{conversion[:source_ccy].downcase}-#{conversion[:target_ccy].downcase}"
+     edit_id = "edit_#{rate_id}" %>
+    <tr>
+      <td><%= h(conversion[:source_ccy])%></td>
+      <td><%= h(conversion[:target_ccy])%></td>
+      <td>
+        <span id="<%= rate_id %>"><%= h(conversion[:rate])%></span>
+        <a id="<%= edit_id %>" href="#">edit</span>
+        <%= in_place_editor rate_id,
+          :url => update_ccy_path(:ccy => rate_id),
+          :save_text => 'Save',
+          :size => 10,
+          :external_control => edit_id
+        %>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<%   end -%>
+<% end -%>
+<h2>Products</h2>
+<p><strong>Note:</strong> All prices shown are in US dollars.</p>
 <table id="products" class="index">
   <thead>
     <tr>
