@@ -12,10 +12,10 @@ class CartItem
     @product.code
   end
   
-  def subtotal(gst_charged = false)
+  def subtotal(currency, gst_charged = false)
     subtotal = 0
-    if price
-      subtotal = price * @quantity
+    if price(currency)
+      subtotal = price(currency) * @quantity
       subtotal -= @coupon.discount_per_order if coupon?
       if gst_charged
         subtotal = round_to_cents(subtotal * 1.10)
@@ -34,8 +34,8 @@ class CartItem
 
   private
   
-  def price
-    @upgrade ? @product.upgrade_price : @product.price_for_quantity(@quantity)
+  def price(currency)
+    @upgrade ? @product.upgrade_price(currency) : @product.price_for_quantity(@quantity, currency)
   end
 
   def round_to_cents(amount)

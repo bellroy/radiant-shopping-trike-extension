@@ -2,9 +2,10 @@ class Cart
   attr_reader :items
   attr_accessor :id
   attr_accessor :gst_charged
-  attr_accessor 
+  attr_accessor :currency
   
-  def initialize(options = {:gst_charged => true})
+  def initialize(currency, options = {:gst_charged => true})
+    @currency = currency
     @items = []
     options.each_pair {|k, v| self.send(:"#{k}=", v) }
   end
@@ -62,7 +63,7 @@ class Cart
   def ex_gst_total
     grand_total = 0
     items.each do |item|
-      grand_total += item.subtotal(false)
+      grand_total += item.subtotal(@currency, false)
     end
     grand_total
   end
@@ -70,7 +71,7 @@ class Cart
   def total
     grand_total = 0
     items.each do |item|
-      grand_total += item.subtotal(@gst_charged)
+      grand_total += item.subtotal(@currency, @gst_charged)
     end
     grand_total
   end
