@@ -1,0 +1,2 @@
+class CurrencyException < Exception
+end

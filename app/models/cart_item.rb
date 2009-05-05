@@ -16,7 +16,7 @@ class CartItem
     subtotal = 0
     if price(currency)
       subtotal = price(currency) * @quantity
-      subtotal -= @coupon.discount_per_order if coupon?
+      subtotal += @coupon.price_for_quantity(1, currency) if coupon?
       if gst_charged
         subtotal = round_to_cents(subtotal * 1.10)
       end

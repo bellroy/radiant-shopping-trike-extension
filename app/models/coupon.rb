@@ -1,3 +1,5 @@
+require 'currency_conversion'
+
 class Coupon < ActiveRecord::Base
   belongs_to :product
 
@@ -9,8 +11,8 @@ class Coupon < ActiveRecord::Base
     record.errors.add attr, "must be positive." unless value > 0.0
   end
 
-  def price_for_quantity(qty)
-    current? ? -discount_per_order.to_f / qty.to_f : 0
+  def price_for_quantity(qty, currency)
+    current? ? CurrencyConversion.price_in_currency(-discount_per_order.to_f, currency) / qty.to_f : 0
   end
   
   def current?
