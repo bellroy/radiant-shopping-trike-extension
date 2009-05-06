@@ -4,19 +4,23 @@ describe Product do
 
   describe 'price_for_quantity' do
     
-    it 'should be product_price.price passed to price_in_currency' do
+    it 'should be product_price.price passed to amount_in_currency' do
       p = Product.new
       product_price = stub(ProductPrice, :price => 99.95)
       p.stub!(:product_price_for_quantity).and_return(product_price)
-      CurrencyConversion.should_receive(:price_in_currency).with(99.95, 'XTS').and_return(99.95)
-      p.price_for_quantity(1, 'XTS').should == 99.95
+      CurrencyConversion.should_receive(:amount_in_currency).with(
+        99.95,
+        'XTS',
+        an_instance_of(Proc)
+      ).and_return(99.00)
+      p.price_for_quantity(1, 'XTS').should == 99.00
     end
     
   end
   
   describe 'upgrade_price' do
     
-    it 'should be product_price.price passed to price_in_currency' do
+    it 'should be product_price.price passed to amount_in_currency' do
       p = Product.new
       product_price = stub(ProductPrice, :price => 24.95)
       product_prices = mock('product_prices')
@@ -25,7 +29,11 @@ describe Product do
         :first,
         :conditions => {:upgrade => true}
       ).and_return(product_price)
-      CurrencyConversion.should_receive(:price_in_currency).with(24.95, 'XTS').and_return(24.95)
+      CurrencyConversion.should_receive(:amount_in_currency).with(
+        24.95,
+        'XTS',
+        an_instance_of(Proc)
+      ).and_return(24.95)
       p.upgrade_price('XTS').should == 24.95
     end
   

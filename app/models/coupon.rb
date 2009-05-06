@@ -12,7 +12,12 @@ class Coupon < ActiveRecord::Base
   end
 
   def price_for_quantity(qty, currency)
-    current? ? CurrencyConversion.price_in_currency(-discount_per_order.to_f, currency) / qty.to_f : 0
+    price = 0
+    if current?
+      round = lambda { |p| p.round }
+      price = CurrencyConversion.amount_in_currency(-discount_per_order.to_f, currency, round) / qty.to_f
+    end
+    price
   end
   
   def current?

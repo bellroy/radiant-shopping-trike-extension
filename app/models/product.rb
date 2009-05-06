@@ -23,12 +23,14 @@ class Product < ActiveRecord::Base
 
   def upgrade_price(currency)
     pp = self.product_prices.find(:first, :conditions => { :upgrade => true  })
-    pp && CurrencyConversion.price_in_currency(pp.price.to_f, currency)
+    snap = lambda { |price| CurrencyConversion.snap_to_round_amount(price) }
+    pp && CurrencyConversion.amount_in_currency(pp.price.to_f, currency, snap)
   end
 
   def price_for_quantity(quantity, currency)
     pp = product_price_for_quantity(quantity)
-    pp && CurrencyConversion.price_in_currency(pp.price.to_f, currency)
+    snap = lambda { |price| CurrencyConversion.snap_to_round_amount(price) }
+    pp && CurrencyConversion.amount_in_currency(pp.price.to_f, currency, snap)
   end
   
   def total_for_quantity(quantity, currency)

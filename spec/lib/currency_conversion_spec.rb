@@ -12,22 +12,33 @@ describe CurrencyConversion do
     
   end
 
-  describe 'price_in_currency' do
+  describe 'amount_in_currency' do
     
     it 'should return the amount as is if currency is base currency' do
       Radiant::Config.should_not_receive(:[]).with(anything())
-      CurrencyConversion.price_in_currency(:price, CurrencyConversion.base_currency).should == :price
+      CurrencyConversion.amount_in_currency(:price, CurrencyConversion.base_currency).should == :price
     end
 
     it "should return nil if passed a nil amount" do
       Radiant::Config.should_not_receive(:[]).with(anything())
-      CurrencyConversion.price_in_currency(nil, 'XTS').should be_nil
+      CurrencyConversion.amount_in_currency(nil, 'XTS').should be_nil
     end
 
-    it 'should perform currency conversion and rounding when currency is not the base currency' do
+    it 'should perform currency conversion when currency is not the base currency' do
       Radiant::Config.should_receive(:[]).with('currency.usd-aud').and_return('2')
-      CurrencyConversion.should_receive(:snap_to_round_amount).with(10.50).and_return(9.0)
-      CurrencyConversion.price_in_currency(5.25, 'AUD').should == 9.0
+      CurrencyConversion.amount_in_currency(5.25, 'AUD').should == 10.50
+    end
+    
+    it 'should pass the converted value through the rounding function if conversion is performed' do
+      Radiant::Config.should_receive(:[]).with('currency.usd-aud').and_return('2')
+      rounder = lambda { |amount| "#{amount} rounded" }
+      CurrencyConversion.amount_in_currency(5.25, 'AUD', rounder).should == "10.5 rounded"
+    end
+    
+    it 'should not perform rounding if conversion is not performed' do
+      Radiant::Config.should_not_receive(:[]).with(anything())
+      rounder = lambda { |amount| "#{amount} rounded" }
+      CurrencyConversion.amount_in_currency(5.25, CurrencyConversion.base_currency, rounder).should == 5.25
     end
     
   end

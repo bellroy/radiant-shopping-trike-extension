@@ -32,10 +32,11 @@ module CurrencyConversion
     return sign * rounded_amount - sign
   end
 
-  def self.price_in_currency(amount, currency)
+  def self.amount_in_currency(amount, currency, round_func = nil)
     return amount if amount.nil? or currency.upcase == base_currency
-
-    snap_to_round_amount(amount * exchange_rate_for_currency(currency))
+    
+    converted_amount = amount * exchange_rate_for_currency(currency)
+    round_func ? round_func.call(converted_amount) : converted_amount
   end
 
 end
